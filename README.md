@@ -1,40 +1,55 @@
 # dsh-super-image
 
-Super Image for DeepSeek Harness: draw one request with **two independently configured image backends in parallel**, verify every result against an explicit requirement rubric, and fuse the best result into a single deliverable.
+[简体中文](#简体中文) · [English](#english) · [下载 / Downloads](https://github.com/Byton-Patrica/dsh-super-image/releases)
 
-## Features
+## 简体中文
 
-- Dedicated **Super Image** tab in the DSH settings dialog (`super-image` namespace).
-- Backend A / Backend B, each either an **OpenAI-Images-compatible API** or a local **ComfyUI** server.
-- API keys live in the DSH credential service only (`SUPER_IMAGE_A_API_KEY`, `SUPER_IMAGE_B_API_KEY` by default) — never in settings or the profile patch.
-- Tool `super_image` (does not touch `generate_image` / `image_generate`) and slash command `/super-image <prompt>`.
-- Composer-dock button inserts `/super-image ` into the message box.
-- Pipeline: rubric extraction → `Promise.allSettled` dual-backend generation → per-image rubric verification (VLM when available, heuristic fallback) → fusion (`reference-edit` / `prompt-synthesis` / `side-by-side`).
-- The comparison is a **requirement × image** table (pass / unmet / weak / needs-human) followed by a per-image **strengths / unmet-weak** table.
-- Fusion on: the best original becomes the base and the final image gets its own verification note stating what was resolved and what still remains. Fusion off: the two originals and the table are returned side-by-side, and no third image is generated.
-- Originals and final image are written to `<session workspace>/generate/super-image/` and returned as inline image blocks; nothing is deleted.
-- One failed backend degrades to the other with an explicit note instead of failing the whole call.
-- Local ComfyUI generations append a safety negative (`nsfw, nude, topless, …`) so anime-tuned checkpoints do not drift into adult content unasked.
-- Fusion only runs when the visual verification actually produced scores; if no VLM is available, the tool returns the two originals side-by-side instead of guessing a base image.
+为 DeepSeek Harness (DSH) 提供双后端图像生成。插件并行请求两个独立配置的后端，按需求逐项比较候选图，并在配置和后端能力允许时生成融合图。每个后端可独立使用 OpenAI Images 兼容 API 或 ComfyUI。
 
-## Settings
+### 安装
 
-`Settings → Super Image`:
+需要支持 DSH 插件的 Web profile，以及 Node.js 22.19 或更高版本。从 GitHub 安装到名为 `web` 的 profile：
 
-1. **Backend A / Backend B** — type (`api` / `comfyui`), endpoint, model, size, quality; for ComfyUI: server URL, **model/workflow picker** (reads the workflows stored in the running ComfyUI, e.g. NoobAI-XL and qwen image, and auto-fills the node mapping), optional output size, and advanced node ids / local workflow path / timeout / poll interval. Cards turn red when required fields or credentials are missing.
-2. **Generation strategy** — images per backend (1–4), enable rubric verification, enable fusion, fusion mode.
-3. **Advanced** — optional VLM provider/model used for verification; empty means auto-detect a host vision model.
-
-ComfyUI runs on demand. When it is not running, the settings cards show an amber **未启动** state (not an error), keep showing the last model list from the local cache, and offer a **启动 ComfyUI** button. The host also starts it automatically before generation (`D:\ComfyUI\comfyctl.ps1 -Action start`, overridable with `DSH_COMFY_START_SCRIPT`) and reports a clear timeout if startup fails.
-
-ComfyUI requires an **API-format** workflow exported from ComfyUI (`导出 API 格式`). The picker lists the workflows stored by the running server (`GET /userdata?dir=workflows`), detects the prompt/negative/seed/size/output nodes for each, and rejects UI-format exports (with `nodes`/`links`) with an explicit message. Picking a model clears the size so the workflow's native resolution is used; type a size such as `832x1216` to override.
-
-## Layout
-
+```powershell
+dsh plugin --profile web add github:Byton-Patrica/dsh-super-image
 ```
-lib/index.js      host: tool, command, settings/credential routes, pipeline
-lib/prompts.js    rubric extraction / verification / fusion prompts + tolerant parsers
-lib/client.js     settings section + composer-dock entry
-locale/           display metadata
-cordis.patch.yml  bundle patch (entry id: super-image)
+
+将 `web` 换成你的 profile 名称。也可以从 [v0.1.3 发布页](https://github.com/Byton-Patrica/dsh-super-image/releases/tag/v0.1.3) 下载 `.tgz` 安装包。安装后完整重启 DSH，再进入「设置 → Super Image」。
+
+### 配置和使用
+
+1. 配置后端 A、B。API 后端填写地址、模型和凭据。密钥存入 DSH 凭据服务，默认引用名为 `SUPER_IMAGE_A_API_KEY` 和 `SUPER_IMAGE_B_API_KEY`。
+2. ComfyUI 后端填写服务地址，并选择 API 格式的工作流。详见 [ComfyUI 配置指南](docs/comfyui-contract.md#简体中文)。
+3. 在聊天框输入 `/super-image 一张雨后夜市的街景，暖色灯光，横向构图`。也可通过工具 `super_image` 调用。
+
+原图和生成的融合图保存在当前会话工作区的 `generate/super-image/`。如果一个后端失败，插件可返回另一个后端的结果。要只比较候选图，可关闭融合或选择并排模式。
+
+### 开发与反馈
+
+运行 `node --test test/prompts.test.mjs` 执行提示词单元测试。提交问题时请附上 DSH 版本、插件版本、后端类型和脱敏后的错误信息。包元数据声明使用 MIT 许可证。
+
+## English
+
+Dual-backend image generation for DeepSeek Harness (DSH). The plugin calls two independently configured backends in parallel, compares candidates against the requested requirements, and can produce a fused image when the settings and backend capabilities allow it. Each backend can use an OpenAI Images-compatible API or ComfyUI.
+
+### Installation
+
+Use a DSH Web profile with plugin support and Node.js 22.19 or later. To install from GitHub into a profile named `web`:
+
+```powershell
+dsh plugin --profile web add github:Byton-Patrica/dsh-super-image
 ```
+
+Replace `web` with your profile name. The `.tgz` package is also available on the [v0.1.3 release page](https://github.com/Byton-Patrica/dsh-super-image/releases/tag/v0.1.3). After installing, fully restart DSH and open **Settings → Super Image**.
+
+### Configuration and usage
+
+1. Configure backends A and B. For API backends, enter the endpoint, model, and credentials. Store keys in the DSH credential service. The default references are `SUPER_IMAGE_A_API_KEY` and `SUPER_IMAGE_B_API_KEY`.
+2. For ComfyUI backends, enter the server URL and select an API-format workflow. See the [ComfyUI setup guide](docs/comfyui-contract.md#english).
+3. Enter `/super-image A night market after rain, warm lighting, landscape composition` in chat. The plugin also exposes the `super_image` tool.
+
+The plugin saves the original images and any fused output under `generate/super-image/` in the session workspace. If one backend fails, the plugin can return the other backend's result. To compare candidates only, disable fusion or choose side-by-side mode.
+
+### Development and feedback
+
+Run `node --test test/prompts.test.mjs` to execute the prompt unit tests. When reporting an issue, include the DSH version, plugin version, backend type, and error details with sensitive information removed. The package metadata declares the MIT license.
