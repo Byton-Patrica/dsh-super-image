@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "title": "Super Image",
+    "description": "Draw with two independently configured image backends in parallel, verify both against a requirement rubric, and fuse the strongest result into one deliverable."
+  },
+  "section": {
+    "title": "Super Image",
+    "subtitle": "Two backends draw in parallel · rubric verification · fused delivery"
+  }
+}

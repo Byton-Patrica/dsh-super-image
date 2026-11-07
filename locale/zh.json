@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "title": "Super Image",
+    "description": "双后端并行画图：两个可独立配置的画图后端同时生成，按需求清单逐项校验，再融合为一张最终交付图。"
+  },
+  "section": {
+    "title": "Super Image",
+    "subtitle": "双后端并行 · 需求校验 · 融合交付"
+  }
+}

@@ -1,0 +1,8 @@
+- insert:
+    - id: super-image
+      name: dsh-super-image
+      config:
+        perBackendCount: 1
+        enableVerify: true
+        enableFusion: true
+        fusionMode: reference-edit
