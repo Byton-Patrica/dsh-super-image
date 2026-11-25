@@ -1,6 +1,6 @@
 # dsh-super-image
 
-[简体中文](#简体中文) · [English](#english) · [下载 / Downloads](https://github.com/Byton-Patrica/dsh-super-image/releases)
+[简体中文](#简体中文) · [English](#english) · [下载 / Downloads](https://github.com/Byton-Patrica/dsh-super-image/releases/latest)
 
 ## 简体中文
 
@@ -14,7 +14,7 @@
 dsh plugin --profile web add github:Byton-Patrica/dsh-super-image
 ```
 
-将 `web` 换成你的 profile 名称。也可以从 [v0.1.3 发布页](https://github.com/Byton-Patrica/dsh-super-image/releases/tag/v0.1.3) 下载 `.tgz` 安装包。安装后完整重启 DSH，再进入「设置 → Super Image」。
+将 `web` 换成你的 profile 名称。也可以从 [最新版发布页](https://github.com/Byton-Patrica/dsh-super-image/releases/latest) 下载 `.tgz` 安装包。安装后完整重启 DSH，再进入「设置 → Super Image」。
 
 ### 配置和使用
 
@@ -40,7 +40,7 @@ Use a DSH Web profile with plugin support and Node.js 22.19 or later. To install
 dsh plugin --profile web add github:Byton-Patrica/dsh-super-image
 ```
 
-Replace `web` with your profile name. The `.tgz` package is also available on the [v0.1.3 release page](https://github.com/Byton-Patrica/dsh-super-image/releases/tag/v0.1.3). After installing, fully restart DSH and open **Settings → Super Image**.
+Replace `web` with your profile name. The `.tgz` package is also available on the [latest release page](https://github.com/Byton-Patrica/dsh-super-image/releases/latest). After installing, fully restart DSH and open **Settings → Super Image**.
 
 ### Configuration and usage
 
